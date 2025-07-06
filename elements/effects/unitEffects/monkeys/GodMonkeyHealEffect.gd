@@ -1,12 +1,12 @@
 extends AbstractEffect
-class_name KnightMonkeyEffect
+class_name GodMonkeyHealEffect
 
 
-const idEffect = "test:KnightMonkeyEffect"
+const idEffect = "test:GodMonkeyHealEffect"
 const img = ""
 
 func _init(unit: AbstractUnit):
-	super._init(idEffect, img, unit, -1, 0, true, 3, 0, 0, 0)
+	super._init(idEffect, img, unit, -1, 0, true, 6, 0, 0, 0)
 
 
 func onStartOfTurn(turnNumber: int, turnColor: TeamsColor.TeamsColor) -> void:

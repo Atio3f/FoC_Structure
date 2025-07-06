@@ -9,6 +9,8 @@ var unitsStocked: Array[AbstractUnit] = []	#Can be used if the effect need to st
 var remainingTurns: int = -1	#Indicate how many turn before the end of the effect. If the effect is permanent, this value is -1
 var priority: int	#Serve to place the effect on the Array on the unit. Determine if the order when we iterate effects
 var stackable: bool	#Allow to know if we can stack effects
+var hideEffect: bool = false	#Allow to hide the effect on the when it doesn't really affect the unit itself
+var isActivable: bool = false	#Determine if the ability is an activable ability
 #3 values to assign values to the effect once  
 var value_A: int
 var value_B: int
@@ -85,7 +87,7 @@ func onLevelUp(level: int) -> void :
 	1
 
 func onStartOfTurn(turnNumber: int, turnColor: TeamsColor.TeamsColor) -> void:
-	1
+	if remainingTurns != -1 : remainingTurns -= 1
 
 func registerEffect() -> Dictionary:
 	return {

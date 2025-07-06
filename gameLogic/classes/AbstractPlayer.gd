@@ -16,7 +16,7 @@ func getUnits() -> Array[AbstractUnit]:
 func getUnitsByTag(tag: Tags.tags) -> Array[AbstractUnit]:
 	var _units : Array[AbstractUnit] = []
 	for unit in units:
-		if(unit.tags.has(tag)):
+		if(unit.tags.has(tag) && !unit.isDead):
 			_units.append(unit)
 	return _units
 

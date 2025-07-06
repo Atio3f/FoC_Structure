@@ -2,6 +2,7 @@ extends Node
 class_name AbstractUnit
 #Represent a unit
 static var _uid_counter := 0
+static var xpPerLevel = [0, 80, 220, 400, 700, 99999]
 var id: String	#Id of the unit, serve to know the id of the unit
 var uid: String	#Identifiant unique créer lorsqu'on place l'unité
 var imgPath: String
@@ -16,6 +17,7 @@ var damageType: DamageTypes.DamageTypes
 var atkPerTurn: int = 1; #Number of attacks the unit can perform each turn
 var atkRemaining: int
 var atkPerTurnBase: int
+var range: int
 var speed: int
 var speedRemaining: int	#Speed remaining for this turn
 var speedBase: int #Base value of speed for the unit without any bonus or change
@@ -37,7 +39,10 @@ var tags: Array[Tags.tags]
 var tile: String	#Keep the name of the tile where is the unit
 var isDead: bool	#Allow us to keep track of units killed
 
-func _init(id: String, imgPath: String, playerAssociated: AbstractPlayer, hpBase: int, powerBase:int, damageType: DamageTypes.DamageTypes, atkPerTurnBase: int, speedBase: int, drBase: int, mrBase: int, potential: int, wisdomBase: int, idDead: bool = false):
+var movementTypes : Array[MovementTypes.movementTypes] = []
+var actualMovementTypes : MovementTypes.movementTypes
+
+func _init(id: String, imgPath: String, playerAssociated: AbstractPlayer, hpBase: int, powerBase:int, damageType: DamageTypes.DamageTypes, atkPerTurnBase: int, range: int, speedBase: int, drBase: int, mrBase: int, potential: int, wisdomBase: int, idDead: bool = false):
 	self.id = id
 	_uid_counter += 1
 	self.uid = str(randi() % 100000).pad_zeros(6) + str(Time.get_unix_time_from_system()) + str(_uid_counter)
@@ -52,6 +57,7 @@ func _init(id: String, imgPath: String, playerAssociated: AbstractPlayer, hpBase
 	self.atkPerTurn = atkPerTurnBase
 	self.atkRemaining = atkPerTurnBase
 	self.atkPerTurnBase = atkPerTurnBase
+	self.range = range
 	self.speed = speedBase
 	self.speedRemaining = speedBase
 	self.speedBase = speedBase
@@ -198,6 +204,7 @@ func healHp(healValue: int):
 		hpActual += healValue
 
 func onKill(unitKilled: AbstractUnit) -> void :
+	gainXp(ActionTypes.actionTypes.KILL, {"maxHp":unitKilled.hpMax})
 	for effect: AbstractEffect in effects:
 		effect.onKill(unitKilled)
 
@@ -206,9 +213,10 @@ func onDeath(unit: AbstractUnit = null) -> void:
 		effect.onDeath(unit)
 	isDead = true	#You're not supposed to be able to survive once you're in this function
 
-func onLevelUp(level: int) -> void :
+func onLevelUp() -> void :
 	for effect: AbstractEffect in effects:
 		effect.onLevelUp(level)
+	calculateLevel()#Allow to gain multiple levels if you got enough xp
 
 func onStartOfTurn(turnNumber: int, turnColor: TeamsColor.TeamsColor) -> void:
 	if(turnColor == player.team):
@@ -217,7 +225,61 @@ func onStartOfTurn(turnNumber: int, turnColor: TeamsColor.TeamsColor) -> void:
 	for effect: AbstractEffect in effects:
 		effect.onStartOfTurn(turnNumber, turnColor)
 
+#Manage all cases where an unit gain xp
+func gainXp(action: ActionTypes.actionTypes, infos: Dictionary = {})-> void:
+	match action:
+		ActionTypes.actionTypes.ATTACK:
+			xp = xp + (infos.damage * 0.75 + wisdom)
+		ActionTypes.actionTypes.ATTACKED:
+			xp = xp + ((infos.damage + wisdom) /2)
+		ActionTypes.actionTypes.KILL:
+			xp = xp + infos.maxHp + (2 * wisdom)
+		_:
+			1
 
+func calculateLevel() -> void :
+	if level == potential : return	#Already level max
+	if xpPerLevel[level] < xp :
+		level += 1	#Set the new level
+		#Reajust the stats depending of the new level reached
+		match level:
+			2:
+				hpMax += hpBase / 2
+				hpActual += hpBase / 2
+				power += 3
+				dr += 1
+				mr += 1
+				speed += 2
+				wisdom += 1
+			3:
+				hpMax += hpBase / 2
+				hpActual += hpBase / 2
+				power += powerBase / 2 + 1
+				dr += 3
+				mr += 3
+				speed += 2
+				wisdom += 2
+			4:
+				hpMax += hpBase / 2
+				hpActual += hpBase / 2
+				atkPerTurn += 1
+				atkRemaining += 1
+				power += powerBase / 2
+				dr += 4
+				mr += 4
+				speed += 3
+				speedRemaining += 3
+				wisdom += 3
+			5:
+				hpMax += hpBase
+				hpActual += hpBase
+				power += powerBase + 1
+				dr += drBase + 5
+				mr += mrBase + 5
+				speed += 3
+				speedRemaining += 3
+				wisdom += 5
+	onLevelUp()
 func registerUnit() -> JSON :
 	var unitData := {
 		"id": self.id,
@@ -232,6 +294,7 @@ func registerUnit() -> JSON :
 		"power": self.power,
 		"atkPerTurnBase": self.atkPerTurn,
 		"atkRemaining": self.atkRemaining,
+		"range": self.range,
 		"speedBase": self.speedBase,
 		"speed": self.speed,
 		"speedRemaining": self.speedRemaining,
@@ -245,6 +308,8 @@ func registerUnit() -> JSON :
 		"level": self.level,
 		"xp": self.xp,
 		"tags": self.tags,
+		"movementTypes": self.movementTypes,
+		"actualMovementTypes": self.actualMovementTypes,
 		"tile": self.tile,
 		"effects": []  # Une liste d'effets
 	}
@@ -258,10 +323,12 @@ static func recoverUnit(unitJson: JSON, player: AbstractPlayer) -> AbstractUnit 
 	var data : Dictionary = unitJson.data
 	#Create a unit with all elements associated, need to add some things !!! like playerAssociated
 	if UnitDb.UNITS.has(data.className):
-		var unit = UnitDb.UNITS[data.className].new(data.id, player, data.hpBase, data.powerBase, data.atkPerTurnBase, data.speedBase, data.drBase, data.mrBase, data.potential, data.wisdomBase)
+		var unit = UnitDb.UNITS[data.className].new(data.id, player, data.hpBase, data.powerBase, data.atkPerTurnBase, data.range, data.speedBase, data.drBase, data.mrBase, data.potential, data.wisdomBase)
 		unit.initStats(data.uid, data.hpMax, data.hpActual, data.hpTemp, data.power, data.speed, data.speedRemaining, data.atkPerTurn, data.atkRemaining, data.dr, data.mr, data.wisdom, data.level, data.xp)
 		unit.tile = data.tile
 		unit.tags = data.tags
+		unit.movementTypes = data.movementTypes
+		unit.actualMovementTypes = data.actualMovementTypes
 		for effectJson in data.effects:
 			unit.effects.append(AbstractEffect.recoverEffect(effectJson, unit))
 		return unit

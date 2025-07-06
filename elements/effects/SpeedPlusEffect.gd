@@ -1,7 +1,7 @@
 extends AbstractEffect
-class_name PowerPlusEffect
+class_name SpeedPlusEffect
 
-const idEffect = "test:PowerPlusEffect"
+const idEffect = "test:SpeedPlusEffect"
 const img = ""
 
 func _init(unit: AbstractUnit, value: int):
@@ -9,9 +9,8 @@ func _init(unit: AbstractUnit, value: int):
 	
 	
 func onEffectApplied(firstTime: bool, oldEffect:AbstractEffect = null):
-	print("Boost power pour "+unitAssociated.uid)
-	unitAssociated.power += value_A if firstTime else oldEffect.value_A
-	print(unitAssociated.power)
-
+	print("Boost speed pour "+unitAssociated.uid)
+	unitAssociated.speed += value_A if firstTime else oldEffect.value_A
+	print(unitAssociated.speed)
 
 

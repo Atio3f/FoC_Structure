@@ -22,6 +22,8 @@ DamageTypes="*res://gameLogic/enums/damageTypes.gd"
 TeamsColor="*res://gameLogic/enums/TeamsColor.gd"
 Tags="*res://gameLogic/enums/tags.gd"
 LogicTest="res://tests/logicTest.gd"
+ActionTypes="*res://gameLogic/enums/actionTypes.gd"
+MovementTypes="*res://gameLogic/enums/movementTypes.gd"
 
 [rendering]
 
