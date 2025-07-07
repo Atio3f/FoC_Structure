@@ -6,7 +6,7 @@ const idEffect = "test:GodMonkeySpeedEffect"
 const img = ""
 
 func _init(unit: AbstractUnit):
-	super._init(idEffect, img, unit, -1, 0, true, 1, 0, 0, 0)
+	super._init(idEffect, img, unit, -1, 0, false, 1, 0, 0, 0)
 	
 
 func onPlacement(tile: String) -> void:

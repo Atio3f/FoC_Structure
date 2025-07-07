@@ -2,7 +2,7 @@ extends Node
 class_name AbstractUnit
 #Represent a unit
 static var _uid_counter := 0
-static var xpPerLevel = [0, 80, 220, 400, 700, 99999]
+static var xpPerLevel = [0, 90, 220, 400, 700, 99999]
 var id: String	#Id of the unit, serve to know the id of the unit
 var uid: String	#Identifiant unique créer lorsqu'on place l'unité
 var imgPath: String

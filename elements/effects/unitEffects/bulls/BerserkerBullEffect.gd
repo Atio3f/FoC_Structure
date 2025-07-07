@@ -7,7 +7,7 @@ const DMG_MULTIPLIER = 2
 const HEAL_VALUE = 10
 
 func _init(unit: AbstractUnit):
-	super._init(idEffect, img, unit, -1, 100, true, DMG_MULTIPLIER, HEAL_VALUE, 0, 0)
+	super._init(idEffect, img, unit, -1, 100, false, DMG_MULTIPLIER, HEAL_VALUE, 0, 0)
 
 
 func onDamageTaken(unit: AbstractUnit, damage: int, damageType: DamageTypes.DamageTypes, visualisation: bool) -> int :
