@@ -7,6 +7,10 @@ const UNITS = {
 	"KnightMonkey": preload("res://elements/units/monkeys/KnightMonkey.gd"),
 	"GodMonkey": preload("res://elements/units/monkeys/GodMonkey.gd"),
 	"WingedBull": preload("res://elements/units/bulls/WingedBull.gd"),
-	"Bull": preload("res://elements/units/bulls/Bull.gd")
+	"Bull": preload("res://elements/units/bulls/Bull.gd"),
+	"TemporalSnail": preload("res://elements/units/magicalBeasts/TemporalSnail.gd"),
+	"BlueMushroom": preload("res://elements/units/magicalBeasts/BlueMushroom.gd"),
+	"AbominationMonkey": preload("res://elements/units/monkeys/AbominationMonkey.gd"),
+	"IroncladBull": preload("res://elements/units/bulls/IroncladBull.gd"),
 }
 

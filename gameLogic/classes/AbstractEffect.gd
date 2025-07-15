@@ -1,4 +1,3 @@
-extends Node
 class_name AbstractEffect
 var id: String
 var nameEffect: String
@@ -6,6 +5,7 @@ var imgEffect: Sprite2D
 var imgPath: String
 var unitAssociated: AbstractUnit
 var unitsStocked: Array[AbstractUnit] = []	#Can be used if the effect need to stock units affected or the source?
+var effectAssociated: AbstractEffect = null	#Generaly use when this effect is a sub effect of an unit
 var remainingTurns: int = -1	#Indicate how many turn before the end of the effect. If the effect is permanent, this value is -1
 var priority: int	#Serve to place the effect on the Array on the unit. Determine if the order when we iterate effects
 var stackable: bool	#Allow to know if we can stack effects
@@ -18,6 +18,7 @@ var value_C: int
 var counter: int #Can be used to increment a value 
 func _init(id: String, imgPath: String, unit: AbstractUnit, remainingTurns: int, priority: int, stackable: bool, value_A: int, value_B: int = 0, value_C: int = 0, counter: int = 0):
 	self.id = id
+	self.nameEffect = id.substr(5)
 	self.imgPath = imgPath
 	#INSERER IMAGE A PARTIR DU PATH ICI
 	self.unitAssociated = unit
@@ -69,7 +70,7 @@ func onDamageTaken(unit: AbstractUnit, damage: int, damageType: DamageTypes.Dama
 	return damage
 
 #Return final damage taken
-func onDamageDealed(unit: AbstractUnit, damage: int, damageType: DamageTypes.DamageTypes) -> int :
+func onDamageDealed(unit: AbstractUnit, damage: int, damageType: DamageTypes.DamageTypes, visualisation: bool) -> int :
 	return damage
 
 func onHeal(unitHealed: AbstractUnit, healValue: int) -> int :
@@ -88,28 +89,36 @@ func onLevelUp(level: int) -> void :
 
 func onStartOfTurn(turnNumber: int, turnColor: TeamsColor.TeamsColor) -> void:
 	if remainingTurns != -1 : remainingTurns -= 1
+	if remainingTurns == 0 : onEffectEnd()
 
 func registerEffect() -> Dictionary:
 	return {
 		"id": id,
+		"imgPath": imgPath,
 		"nameEffect": nameEffect,
-		"className": get_class(),
+		"className": get_script().resource_path.get_file().get_basename(),
 		"unitAssociatedId": unitAssociated.id,
 		"unitsStockedIds": unitsStocked.map(func(u): return u),
+		"effectAssociated": effectAssociated,
 		"remainingTurns": remainingTurns,
 		"priority": priority,
 		"stackable": stackable,
+		"hideEffect": hideEffect,
+		"isActivable": isActivable,
 		"value_A": value_A,
 		"value_B": value_B,
 		"value_C": value_C,
 		"counter": counter
 	}
 
-static func recoverEffect(effectJson: JSON, unit: AbstractUnit) -> AbstractEffect :
-	var data : Dictionary = effectJson.data
+static func recoverEffect(data: Dictionary, unit: AbstractUnit) -> AbstractEffect :
 	#Create a effect with all elements associated
 	if EffectDb.EFFECTS.has(data.className):
-		var effect = EffectDb.EFFECTS[data.className].new(data.id, data.imgPath, unit, data.remainingTurns, data.priority, data.stackable, data.value_A, data.value_B, data.value_C, data.counter)
+		var effect = EffectDb.EFFECTS[data.className].new(unit, data.remainingTurns, data.value_A, data.value_B, data.value_C, data.counter)
+		effect.stackable = data.stackable #Normalement fait tout seul
+		if data.effectAssociated != null:
+			effect.effectAssociated = data.effectAssociated
+		#Rajouter le unitsStocked et faudra que ça stocke les uid du coup
 		return effect
 	else :
 		push_error("EFFECT CLASS NOT FIND " + data.className)

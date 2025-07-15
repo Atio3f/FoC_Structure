@@ -4,11 +4,11 @@ class_name GodMonkeyMinionEffect
 
 const idEffect = "test:GodMonkeyMinionEffect"
 const img = ""
-var effectAssociated: AbstractEffect
-func _init(unit: AbstractUnit, effectAssociated: AbstractEffect):
-	super._init(idEffect, img, unit, -1, 0, true, 0, 0, 0, 0)
+
+func _init(unit: AbstractUnit, remainingTurns: int, value_A: int = 0, value_B: int = 0, value_C: int = 0, counter: int = 0):
+	super._init(idEffect, img, unit, remainingTurns, 0, true, 0, 0, 0, 0)
 	self.hideEffect = true
-	self.effectAssociated = effectAssociated
+	
 
 
 func onDeath(unit: AbstractUnit) -> void :

@@ -9,5 +9,6 @@ enum tags {
 	BAT,
 	HUMAN,
 	PENGUIN,
-	BULL
+	BULL,
+	MAGICAL_BEAST
 }

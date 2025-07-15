@@ -1,4 +1,3 @@
-extends Node
 class_name AbstractUnit
 #Represent a unit
 static var _uid_counter := 0
@@ -6,6 +5,7 @@ static var xpPerLevel = [0, 90, 220, 400, 700, 99999]
 var id: String	#Id of the unit, serve to know the id of the unit
 var uid: String	#Identifiant unique créer lorsqu'on place l'unité
 var imgPath: String
+var grade: int
 var hpActual: int
 var hpMax: int
 var hpBase: int
@@ -35,19 +35,20 @@ var xp: int		#Current xp
 var player: AbstractPlayer
 var team: TeamsColor.TeamsColor #Team Color, get from player you control him
 var effects: Array[AbstractEffect] = []	#AbstractEffect pas trouvé comment le mettre dans le type
-var tags: Array[Tags.tags]
+var tags: Array[Tags.tags] = []
 var tile: String	#Keep the name of the tile where is the unit
 var isDead: bool	#Allow us to keep track of units killed
 
 var movementTypes : Array[MovementTypes.movementTypes] = []
-var actualMovementTypes : MovementTypes.movementTypes
+var actualMovementTypes : MovementTypes.movementTypes = MovementTypes.movementTypes.NONE
 
-func _init(id: String, imgPath: String, playerAssociated: AbstractPlayer, hpBase: int, powerBase:int, damageType: DamageTypes.DamageTypes, atkPerTurnBase: int, range: int, speedBase: int, drBase: int, mrBase: int, potential: int, wisdomBase: int, idDead: bool = false):
+func _init(id: String, imgPath: String, playerAssociated: AbstractPlayer, grade: int, hpBase: int, powerBase:int, damageType: DamageTypes.DamageTypes, atkPerTurnBase: int, range: int, speedBase: int, drBase: int, mrBase: int, potential: int, wisdomBase: int, idDead: bool = false):
 	self.id = id
 	_uid_counter += 1
 	self.uid = str(randi() % 100000).pad_zeros(6) + str(Time.get_unix_time_from_system()) + str(_uid_counter)
 	self.player = playerAssociated
 	self.team = playerAssociated.team
+	self.grade = grade
 	self.hpActual = hpBase
 	self.hpMax = hpBase
 	self.hpBase = hpBase
@@ -89,6 +90,9 @@ func initStats(uid: String, hpMax: int, hpActual: int, hpTemp: int, power: int, 
 
 func getPlayer() -> AbstractPlayer:
 	return player
+
+func getPower() -> int:
+	return power
 
 #Add an effect to the unit. If the unit already have the effect, it's incremented. 
 #Maybe it needs to be optimized to stop the for when we pass the priority place
@@ -163,10 +167,10 @@ func onDamageTaken(unit: AbstractUnit, damage: int, damageType: DamageTypes.Dama
 	return hpLoses
 
 #Return final damage taken
-func onDamageDealed(unit: AbstractUnit, damageType: DamageTypes.DamageTypes) -> int :
-	var damage: int = power
+func onDamageDealed(unit: AbstractUnit, damageType: DamageTypes.DamageTypes, visualisation: bool) -> int :
+	var damage: int = getPower()
 	for effect: AbstractEffect in effects:
-		damage = effect.onDamageDealed(unit, damage, damageType)
+		damage = effect.onDamageDealed(unit, damage, damageType, visualisation)
 	return damage
 
 func loseHp(damage: int) -> Dictionary:
@@ -236,6 +240,7 @@ func gainXp(action: ActionTypes.actionTypes, infos: Dictionary = {})-> void:
 			xp = xp + infos.maxHp + (2 * wisdom)
 		_:
 			1
+	calculateLevel()
 
 func calculateLevel() -> void :
 	if level == potential : return	#Already level max
@@ -279,19 +284,25 @@ func calculateLevel() -> void :
 				speed += 3
 				speedRemaining += 3
 				wisdom += 5
-	onLevelUp()
-func registerUnit() -> JSON :
+		onLevelUp()
+	else:
+		return
+
+func registerUnit() -> Dictionary :
 	var unitData := {
 		"id": self.id,
+		"imgPath": self.imgPath,
 		"uid": self.uid,
-		"className": self.get_class(), # ou un champ "className" si tu le stockes explicitement
-		"player_id": self.player.id,
+		"className": get_script().resource_path.get_file().get_basename(),
+		"grade": self.grade,
 		"hpBase": self.hpBase,
 		"hpMax": self.hpMax,
 		"hpActual": self.hpActual,
 		"hpTemp": self.hpTemp,
 		"powerBase": self.powerBase,
 		"power": self.power,
+		"damageType": self.damageType,
+		"atkPerTurn": self.atkPerTurn,
 		"atkPerTurnBase": self.atkPerTurn,
 		"atkRemaining": self.atkRemaining,
 		"range": self.range,
@@ -311,26 +322,30 @@ func registerUnit() -> JSON :
 		"movementTypes": self.movementTypes,
 		"actualMovementTypes": self.actualMovementTypes,
 		"tile": self.tile,
+		"isDead": self.isDead,
 		"effects": []  # Une liste d'effets
 	}
 	for effect: AbstractEffect in effects:
 		unitData["effects"].append(effect.registerEffect())
-	var json = JSON.new()
-	json = json.stringify(unitData)
-	return json.data
+	return unitData
 	
-static func recoverUnit(unitJson: JSON, player: AbstractPlayer) -> AbstractUnit :
-	var data : Dictionary = unitJson.data
+static func recoverUnit(data: Dictionary, player: AbstractPlayer) -> AbstractUnit :
 	#Create a unit with all elements associated, need to add some things !!! like playerAssociated
 	if UnitDb.UNITS.has(data.className):
-		var unit = UnitDb.UNITS[data.className].new(data.id, player, data.hpBase, data.powerBase, data.atkPerTurnBase, data.range, data.speedBase, data.drBase, data.mrBase, data.potential, data.wisdomBase)
+		#Pas faisable car pas même nbr de param + inutile
+		#var unit = UnitDb.UNITS[data.className].new(data.id, player, data.hpBase, data.powerBase, data.atkPerTurnBase, data.range, data.speedBase, data.drBase, data.mrBase, data.potential, data.wisdomBase)
+		var unit = AbstractUnit.new(data.id, data.imgPath, player, data.grade, data.hpBase, data.powerBase, data.damageType, data.atkPerTurnBase, data.range, data.speedBase, data.drBase, data.mrBase, data.potential, data.wisdomBase)
 		unit.initStats(data.uid, data.hpMax, data.hpActual, data.hpTemp, data.power, data.speed, data.speedRemaining, data.atkPerTurn, data.atkRemaining, data.dr, data.mr, data.wisdom, data.level, data.xp)
 		unit.tile = data.tile
-		unit.tags = data.tags
-		unit.movementTypes = data.movementTypes
+		for tag: int in data.tags:
+			unit.tags.append(tag)
+		
+		for movementType: int in data.movementTypes:
+			unit.movementTypes.append(data.movementTypes)
 		unit.actualMovementTypes = data.actualMovementTypes
-		for effectJson in data.effects:
-			unit.effects.append(AbstractEffect.recoverEffect(effectJson, unit))
+		unit.isDead = data.isDead
+		for effectData in data.effects:
+			unit.effects.append(AbstractEffect.recoverEffect(effectData, unit))
 		return unit
 	else :
 		push_error("UNIT CLASS NOT FIND")

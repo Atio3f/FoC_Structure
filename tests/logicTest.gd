@@ -5,14 +5,15 @@ func _ready():
 	#testFightMonkey1()
 	#testHealOnKill()
 	#testGodMonkeyEffectsWorked()
-	testMonteeNiveau()
-
+	#testMonteeNiveau()
+	#testSaveDatas()
+	testTemporalSnail()
 #Test qui permet de savoir si on peut bien créer 2 joueurs avec 2 unités chacun en vérifiant l'activation de leurs effets de placement
 #et faire des combats jusqu'à la mort en vérifiant que certains effets s'activent à la mort
 func testFightMonkey1():
 	#On crée les joueurs
-	var player1: AbstractPlayer = AbstractPlayer.new(TeamsColor.TeamsColor.CYAN)
-	var player2: AbstractPlayer = AbstractPlayer.new(TeamsColor.TeamsColor.RED)
+	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
+	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	print(player1.getUnits())
 	#On crée l'unité du joueur 1
 	var unit1: AbstractUnit = Monkey.new(player1)
@@ -31,8 +32,8 @@ func testFightMonkey1():
 	unit4.onPlacement("tile:desert")
 	print("DEBUT FIGHT")
 	#On simule des combats jusqu'à la mort
-	print("Power Monkey before fight"+ str(unit1.power))
-	assert(unit1.power == unit1.powerBase + 4)
+	print("Power Monkey before fight"+ str(unit1.getPower()))
+	assert(unit1.getPower() == unit1.powerBase + 4)
 	GameManager.fight(unit4, unit3)
 	print(unit3.hpActual)
 	GameManager.fight(unit4, unit3)
@@ -41,13 +42,13 @@ func testFightMonkey1():
 	print(unit3.hpActual)
 	GameManager.fight(unit4, unit3)
 	print(unit3.hpActual)
-	print("Power Monkey after all fights"+ str(unit1.power))
-	assert(unit1.power == unit1.powerBase + 2)
+	print("Power Monkey after all fights"+ str(unit1.getPower()))
+	assert(unit1.getPower() == unit1.powerBase + 2)
 
 func testHealOnKill():
 	#On crée les joueurs
-	var player1: AbstractPlayer = AbstractPlayer.new(TeamsColor.TeamsColor.CYAN)
-	var player2: AbstractPlayer = AbstractPlayer.new(TeamsColor.TeamsColor.RED)
+	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
+	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	#On crée l'unité du joueur 1
 	var unit1: AbstractUnit = KnightMonkey.new(player1)
 	unit1.onPlacement("tile:desert")
@@ -65,8 +66,9 @@ func testHealOnKill():
 
 func testGodMonkeyEffectsWorked() -> void:
 	#On crée les joueurs
-	var player1: AbstractPlayer = AbstractPlayer.new(TeamsColor.TeamsColor.CYAN)
-	var player2: AbstractPlayer = AbstractPlayer.new(TeamsColor.TeamsColor.RED)
+
+	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
+	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	
 	#On crée l'unité du joueur 1
 	var unit1: AbstractUnit = GodMonkey.new(player1)
@@ -86,8 +88,11 @@ func testGodMonkeyEffectsWorked() -> void:
 
 func testMonteeNiveau():
 	#On crée les joueurs
-	var player1: AbstractPlayer = AbstractPlayer.new(TeamsColor.TeamsColor.CYAN)
-	var player2: AbstractPlayer = AbstractPlayer.new(TeamsColor.TeamsColor.RED)
+
+	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
+	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
+	TurnManager.addTeam(player1.team)
+	TurnManager.addTeam(player2.team)
 	#On crée les unités du joueur 1
 	var unit1: AbstractUnit = KnightMonkey.new(player1)
 	unit1.onPlacement("tile:desert")
@@ -100,7 +105,50 @@ func testMonteeNiveau():
 	var lvlBull = unit2.level
 	GameManager.fight(unit2, unit1)
 	print(unit2.xp)
-	GameManager.fight(unit2, unit3)
+	TurnManager.nextTurn()
+	#FAUT RESET LE TOUR DU JOUEUR IL A PLUS D'ACTION A CE MOMENT LA
+	GameManager.fight(unit2, unit3)#YA UN PROB CE COMBAT NE DONNE DE L'XP A PERSONNE !!!
 	print(unit2.xp)
 	assert(unit2.level == 2)
 	assert(unit2.hpMax == unit2.hpBase * 1.5)
+
+#Permet de s'assurer qu'on peut sauvegarder les données d'une partie pour la reprendre plus tard
+func testSaveDatas() -> void:
+	GameManager.deleteAllSaves()
+	#On crée les joueurs
+
+	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
+	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
+	var unit1: AbstractUnit = KnightMonkey.new(player1)
+	unit1.onPlacement("tile:desert")
+	GameManager.savingGame()
+	GameManager.loadSave(1)
+	var players: Array = GameManager.getPlayers()
+	var player1S: AbstractPlayer = players[0]
+	var player2S: AbstractPlayer = players[1]
+	var unit1S: AbstractUnit = player1S.getUnits()[0]
+
+#Test de l'escargot temporel + du nouveau moyen de créer des unités en une fonction
+func testTemporalSnail() -> void:
+	#On crée les joueurs
+
+	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
+	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
+	
+	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, "tile:desert")
+	var unit2: AbstractUnit = GameManager.placeUnit("test:TemporalSnail", player2, "tile:desert")
+	print(unit2.getPower())
+	GameManager.fight(unit2, unit1)
+	TurnManager.nextTurn()
+	GameManager.fight(unit2, unit1)
+	print(unit2.xp)
+	TurnManager.nextTurn()
+	TurnManager.nextTurn()
+	GameManager.fight(unit2, unit1)
+	TurnManager.nextTurn()
+	TurnManager.nextTurn()
+	GameManager.fight(unit2, unit1)
+	print(unit2.xp)
+	print(unit2.level)
+	
+	
