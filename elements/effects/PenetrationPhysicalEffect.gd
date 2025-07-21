@@ -14,8 +14,10 @@ func _init(unit: AbstractUnit, remainingTurns: int, value_A: int, percentagePen:
 func onDamageDealed(unit: AbstractUnit, damage: int, damageType: DamageTypes.DamageTypes, visualisation: bool) -> int :
 	if damageType != self.damageType :
 		return damage
+	var resistance: int = unit.dr
 	if value_B == 0:
-		damage = damage - value_A
+		if value_A > resistance : damage = damage + resistance
+		else : damage = damage + value_A
 	else :
-		damage = damage * value_A / 100 
+		damage = damage + (resistance * value_A / 100) 
 	return damage

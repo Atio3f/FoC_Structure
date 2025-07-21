@@ -1,3 +1,4 @@
+extends Node
 class_name AbstractUnit
 #Represent a unit
 static var _uid_counter := 0
@@ -36,7 +37,7 @@ var player: AbstractPlayer
 var team: TeamsColor.TeamsColor #Team Color, get from player you control him
 var effects: Array[AbstractEffect] = []	#AbstractEffect pas trouvé comment le mettre dans le type
 var tags: Array[Tags.tags] = []
-var tile: String	#Keep the name of the tile where is the unit
+var tile: AbstractTile	#Keep the tile where is the unit
 var isDead: bool	#Allow us to keep track of units killed
 
 var movementTypes : Array[MovementTypes.movementTypes] = []
@@ -121,11 +122,12 @@ func addEffect(effect: AbstractEffect) -> void:
 		effect.onEffectApplied(true)
 
 #Maybe we will change the type of tile and register it
-func onPlacement(tile: String) -> void:
+func onPlacement(tile: AbstractTile) -> void:
 	self.tile = tile
 	GameManager.whenUnitPlace(self)
 	for effect: AbstractEffect in effects:
 		effect.onPlacement(tile)
+	tile.onUnitIn(self)
 
 func onCardPlay(player: AbstractPlayer) -> void:
 	for effect: AbstractEffect in effects:
@@ -136,14 +138,17 @@ func onUnitPlace(unit: AbstractUnit) -> void:
 		effect.onUnitPlace(unit)
 
 #Tile is the actual tile after the movement
-func onMovement(tile: String) -> void:
+func onMovement(tile: AbstractTile) -> void:
+	self.tile.onUnitOut(self)
 	self.tile = tile
+	tile.onUnitIn(self)
 	for effect: AbstractEffect in effects:
 		effect.onMovement()
 
-func onItemUsed(item: AbstractItem, player: AbstractPlayer) -> void:
+#J'ai retiré item: AbstractItem,  comme param parce que pour le moment ça sert à r
+func onItemUsed(player: AbstractPlayer, isMalus: bool) -> void:
 	for effect: AbstractEffect in effects:
-		effect.onItemUsed(item, player)
+		effect.onItemUsed(player, isMalus)
 
 #Return final damage taken, visualisation serve if we need to see damage dealed before the action
 func onDamageTaken(unit: AbstractUnit, damage: int, damageType: DamageTypes.DamageTypes, visualisation: bool) -> Dictionary :#DamageType is an int because Gdscript is badly make and we can't place a enum which isn't the first on its file
@@ -226,6 +231,8 @@ func onStartOfTurn(turnNumber: int, turnColor: TeamsColor.TeamsColor) -> void:
 	if(turnColor == player.team):
 		speedRemaining = speed
 		atkRemaining = atkPerTurn
+		tile.onStartOfTurn(self)
+	#Est-ce qu'on bloquerait pas ça à seulement le tour du joueur avec le if?
 	for effect: AbstractEffect in effects:
 		effect.onStartOfTurn(turnNumber, turnColor)
 

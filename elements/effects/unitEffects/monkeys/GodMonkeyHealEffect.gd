@@ -10,10 +10,8 @@ func _init(unit: AbstractUnit, remainingTurns: int, value_A: int, value_B: int =
 
 
 func onStartOfTurn(turnNumber: int, turnColor: TeamsColor.TeamsColor) -> void:
-	if(unitAssociated.tile == "test:forest"):
+	if(unitAssociated.tile.id == "test:ForestTile"):
 		var healValue = value_A
 		healValue = unitAssociated.onHealed(unitAssociated, healValue)
 		healValue = unitAssociated.onHeal(unitAssociated, healValue)
-		unitAssociated.healHp(healValue)
-		unitAssociated.healHp(healValue)
 		unitAssociated.healHp(healValue)

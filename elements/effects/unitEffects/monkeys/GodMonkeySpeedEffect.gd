@@ -9,7 +9,7 @@ func _init(unit: AbstractUnit, remainingTurns: int, value_A: int, value_B: int =
 	super._init(idEffect, img, unit, remainingTurns, 0, false, value_A, 0, 0, 0)
 	
 
-func onPlacement(tile: String) -> void:
+func onPlacement(tile: AbstractTile) -> void:
 	unitsStocked = unitAssociated.player.getUnitsByTag(Tags.tags.MONKEY)
 	var effectAdd : AbstractEffect
 	for unit: AbstractUnit in unitsStocked :

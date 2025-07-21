@@ -1,3 +1,4 @@
+extends Node
 class_name TurnManager
 #Manage all end of turn actions and to decide which team have to play
 

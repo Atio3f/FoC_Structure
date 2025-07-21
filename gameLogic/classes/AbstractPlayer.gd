@@ -1,3 +1,4 @@
+extends Node
 class_name AbstractPlayer
 
 
@@ -29,10 +30,32 @@ func getUnitsByTag(tag: Tags.tags) -> Array[AbstractUnit]:
 	return _units
 
 func getCards() -> Array[String] :
-	return hand.cards
+	return hand.getHand()
 
+#Renvoie les cartes jouables du joueur depuis son inventaire(pour le moment on compte pas 
+func getUsableCardsInventory() -> Array[String] :
+	return hand.getHand()
+
+func cardCanBePlayedInventory(idCard: String) -> bool :
+	return true
+
+#Peut contenir des unités ou des joueurs, pour ça que je précise pas dans le renvoi
+func targetsAvailable(idCard: String) -> Array :
+	var targets: Array = []
+	#Iterate through units to get the list of targets availabled
+	for unit: AbstractUnit in GameManager.getAllUnits():
+		if ItemDb.ITEMS[idCard].canBeUsedOnUnit(self, unit) :
+			targets.append(unit)
+
+	for player: AbstractPlayer in GameManager.getPlayers():
+		if ItemDb.ITEMS[idCard].canBeUsedOnPlayer(self, player) :
+			targets.append(player)
+	return targets
+
+#Sera appelé quand on clique sur une carte jouable
 func useCard(idCard: String) -> void :
 	hand.useCard(idCard)
+
 func registerPlayer() -> Dictionary :
 	var playerData := {
 		"playerName": self.playerName,

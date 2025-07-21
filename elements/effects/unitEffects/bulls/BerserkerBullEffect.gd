@@ -14,7 +14,16 @@ func onDamageTaken(unit: AbstractUnit, damage: int, damageType: DamageTypes.Dama
 	return damage * value_A
 
 func onDamageDealed(unit: AbstractUnit, damage: int, damageType: DamageTypes.DamageTypes, visualisation: bool) -> int :
-	return damage * value_A
+	#I can't find an unhardcoded solution to make it apply double damage after damage reduction 
+	var damageReduction : int
+	match damageType:
+		DamageTypes.DamageTypes.PHYSICAL:
+			damageReduction = unit.dr
+		DamageTypes.DamageTypes.MAGICAL:
+			damageReduction = unit.mr
+		_:
+			damageReduction = 0
+	return (damage - damageReduction) * value_A + damageReduction
 
 
 func onKill(unitKilled: AbstractUnit) -> void :

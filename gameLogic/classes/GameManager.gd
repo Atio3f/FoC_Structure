@@ -1,3 +1,4 @@
+extends Node
 class_name GameManager
 
 static var players: Array[AbstractPlayer] = []
@@ -37,7 +38,7 @@ static func createPlayer(team: TeamsColor.TeamsColor, name: String) -> AbstractP
 	return player
 
 static func placeUnit(id: String, player: AbstractPlayer, tile: String) -> AbstractUnit:#pê pas besoin de renvoyer l'unité produite
-	var unit: AbstractUnit = UnitDb.UNITS[id.split(':')[1]].new(player)#We only keep the second id part to get the class corresponding
+	var unit: AbstractUnit = UnitDb.UNITS[id].new(player)#We only keep the second id part to get the class corresponding
 	unit.onPlacement(tile)
 	return unit
 

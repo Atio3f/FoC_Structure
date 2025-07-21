@@ -8,7 +8,7 @@ const img = ""
 
 func _init(playerAssociated: AbstractPlayer):
 	super._init(idUnit, img, playerAssociated, GRADE, 23, 7, DamageTypes.DamageTypes.PHYSICAL, 1, 2, 7, 1, 3, POTENTIAL, 9)
-	var effect1: AbstractEffect = MonkeyEffect.new(self, -1, 2)
+	var effect1: AbstractEffect = MonkeyEffect.new(self, -1, 2, 1)
 	effects.append(effect1)
 	tags.append(Tags.tags.MONKEY)
 	self.movementTypes = [MovementTypes.movementTypes.WALK]

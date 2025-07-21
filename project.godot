@@ -24,6 +24,7 @@ Tags="*res://gameLogic/enums/tags.gd"
 LogicTest="res://tests/logicTest.gd"
 ActionTypes="*res://gameLogic/enums/actionTypes.gd"
 MovementTypes="*res://gameLogic/enums/movementTypes.gd"
+ItemDb="*res://gameLogic/DB/itemDB.gd"
 
 [rendering]
 

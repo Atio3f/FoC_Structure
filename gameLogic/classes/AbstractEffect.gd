@@ -1,3 +1,4 @@
+extends Node
 class_name AbstractEffect
 var id: String
 var nameEffect: String
@@ -41,7 +42,7 @@ func mergeEffect(effectToMerge: AbstractEffect) -> void:
 
 	onEffectApplied(false, effectToMerge)
 
-func onPlacement(tile: String) -> void:
+func onPlacement(tile: AbstractTile) -> void:
 	1
 
 #First time is to use when we have stackable effects which can modify values
@@ -62,7 +63,7 @@ func onUnitPlace(unit: AbstractUnit) -> void:
 func onMovement() -> void:
 	1
 
-func onItemUsed(item: AbstractItem, player: AbstractPlayer) -> void:
+func onItemUsed(player: AbstractPlayer, isMalus: bool) -> void:
 	1
 
 #Return final damage taken, visualisation serves to avoid activating effects like damage on offender before a true attack 
@@ -114,7 +115,7 @@ func registerEffect() -> Dictionary:
 static func recoverEffect(data: Dictionary, unit: AbstractUnit) -> AbstractEffect :
 	#Create a effect with all elements associated
 	if EffectDb.EFFECTS.has(data.className):
-		var effect = EffectDb.EFFECTS[data.className].new(unit, data.remainingTurns, data.value_A, data.value_B, data.value_C, data.counter)
+		var effect = EffectDb.EFFECTS[data.id].new(unit, data.remainingTurns, data.value_A, data.value_B, data.value_C, data.counter)
 		effect.stackable = data.stackable #Normalement fait tout seul
 		if data.effectAssociated != null:
 			effect.effectAssociated = data.effectAssociated
