@@ -125,4 +125,3 @@ static func recoverEffect(data: Dictionary, unit: AbstractUnit) -> AbstractEffec
 		push_error("EFFECT CLASS NOT FIND " + data.className)
 		return null#Maybe create a unit via ?
 	
-

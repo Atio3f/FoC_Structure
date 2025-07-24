@@ -12,6 +12,3 @@ func onEffectApplied(firstTime: bool, oldEffect:AbstractEffect = null):
 	print("Boost power pour "+unitAssociated.uid)
 	unitAssociated.power += value_A if firstTime else oldEffect.value_A
 	print(unitAssociated.getPower())
-
-
-

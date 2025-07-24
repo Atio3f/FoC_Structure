@@ -1,3 +1,4 @@
+extends Node
 
 
 const UNITS = {
@@ -12,4 +13,3 @@ const UNITS = {
 	"test:AbominationMonkey": preload("res://elements/units/monkeys/AbominationMonkey.gd"),
 	"test:IroncladBull": preload("res://elements/units/bulls/IroncladBull.gd"),
 }
-

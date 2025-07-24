@@ -37,7 +37,7 @@ static func createPlayer(team: TeamsColor.TeamsColor, name: String) -> AbstractP
 	if !TurnManager.teams.has(team) : TurnManager.addTeam(team)
 	return player
 
-static func placeUnit(id: String, player: AbstractPlayer, tile: String) -> AbstractUnit:#pê pas besoin de renvoyer l'unité produite
+static func placeUnit(id: String, player: AbstractPlayer, tile: AbstractTile) -> AbstractUnit:#pê pas besoin de renvoyer l'unité produite
 	var unit: AbstractUnit = UnitDb.UNITS[id].new(player)#We only keep the second id part to get the class corresponding
 	unit.onPlacement(tile)
 	return unit
@@ -75,6 +75,11 @@ static func fight(unitAttacking: AbstractUnit, unitAttacked: AbstractUnit) -> vo
 		unitAttacking.gainXp(ActionTypes.actionTypes.ATTACK, infoDamagesTaked)	#We could also create a dictionary {"damage": infoDamagesTaked["damage"]} but idk if its more efficient or not
 	if(unitAttacked.hpActual > 0):
 		unitAttacked.gainXp(ActionTypes.actionTypes.ATTACKED, infoDamagesTaked)	#We could also create a dictionary {"damage": infoDamagesTaked["damage"]} but idk if its more efficient or not
+
+static func generateMap(length: int, width: int) -> void :
+
+	MapManager.initMap(length, width)
+	return
 
 static func savingGame() -> void :
 	
@@ -179,4 +184,3 @@ static func deleteAllSaves() -> void :
 	for save: String in getSavesList():
 		print(deleteSave(i))
 		i += 1
-

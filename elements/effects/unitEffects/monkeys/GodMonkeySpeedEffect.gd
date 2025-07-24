@@ -41,5 +41,3 @@ func updateValue(newValue: int) -> void:
 	var speedCgtEffect = SpeedPlusEffect.new(unitAssociated, -1, (newValue - counter) * value_A)
 	unitAssociated.addEffect(speedCgtEffect)
 	counter = newValue
-
-

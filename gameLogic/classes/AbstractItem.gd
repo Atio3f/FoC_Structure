@@ -1,7 +1,7 @@
 extends Node
 class_name AbstractItem
 
-var id: String
+static var id: String
 var nameItem: String
 var imgPath: String
 var playerAssociated: AbstractPlayer
@@ -48,6 +48,9 @@ static func useItem(playerUsing: AbstractPlayer, orbCost: int, unitTargeted: Abs
 	playerUsing.orbs -= orbCost
 	if unitTargeted != null : unitTargeted.onItemUsed(playerUsing, isMalus)	#Some items doesn't affected units
 	return true
+
+static func getId() -> String:
+	return "UNDEFINED"
 
 func registerItem() -> Dictionary:
 	return {}

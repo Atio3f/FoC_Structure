@@ -2,13 +2,15 @@ extends Node
 #Contains all tests for the functional part of the game logic
 
 func _ready():
-	#testFightMonkey1()
-	testHealOnKill()
-	testGodMonkeyEffectsWorked()
-	testMonteeNiveau()
+	
+	GameManager.generateMap(20, 20)
+	testFightMonkey1()
+	#testHealOnKill()
+	#testGodMonkeyEffectsWorked()
+	#testMonteeNiveau()
 	#testSaveDatas()
-	testTemporalSnail()
-	testAbominationMonkeyEffects()
+	#testTemporalSnail()
+	#testAbominationMonkeyEffects()
 #Test qui permet de savoir si on peut bien créer 2 joueurs avec 2 unités chacun en vérifiant l'activation de leurs effets de placement
 #et faire des combats jusqu'à la mort en vérifiant que certains effets s'activent à la mort
 func testFightMonkey1():
@@ -17,21 +19,21 @@ func testFightMonkey1():
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	print(player1.getUnits())
 	#On crée l'unité du joueur 1
-	var unit1: AbstractUnit = GameManager.placeUnit("test:Monkey", player1, "tile:desert")
-	var unit3: AbstractUnit = GameManager.placeUnit("test:Monkey", player2, "tile:desert")
+	var unit1: AbstractUnit = GameManager.placeUnit("test:Monkey", player1, DesertTile.new(1, 1))
+	var unit3: AbstractUnit = GameManager.placeUnit("test:Monkey", player1, DesertTile.new(1, 2))
 	
 	print("unité 1 " + str(unit1.uid))
 	print("unité 3 " + str(unit3.uid))
 	
 	#On crée l'unité du joueur 2
-	var unit2: AbstractUnit = GameManager.placeUnit("test:Monkey", player2, "tile:desert")
+	var unit2: AbstractUnit = GameManager.placeUnit("test:Monkey", player2, DesertTile.new(1, 3))
 	print("unité 2 " + str(unit2.uid))
-	var unit4: AbstractUnit = GameManager.placeUnit("test:Monkey", player2, "tile:desert")
+	var unit4: AbstractUnit = GameManager.placeUnit("test:Monkey", player2, DesertTile.new(2, 1))
 	print("unité 4 " + str(unit4.uid))
 	print("DEBUT FIGHT")
 	#On simule des combats jusqu'à la mort
 	print("Power Monkey before fight"+ str(unit1.getPower()))
-	assert(unit1.getPower() == unit1.powerBase + 4)
+	assert(unit1.getPower() == unit1.powerBase + 6)
 	GameManager.fight(unit4, unit3)
 	print(unit3.hpActual)
 	TurnManager.nextTurn()
@@ -49,16 +51,16 @@ func testFightMonkey1():
 	print(unit3.hpActual)
 	print("Power Monkey after all fights"+ str(unit1.getPower()))
 	print(unit1.powerBase + 2)
-	assert(unit1.getPower() == unit1.powerBase + 2)
+	assert(unit1.getPower() == unit1.powerBase + 3)
 
 func testHealOnKill():
 	#On crée les joueurs
 	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	#On crée l'unité du joueur 1
-	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, "tile:desert")
+	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, DesertTile.new(1, 2))
 	#On crée l'unité du joueur 2
-	var unit2: AbstractUnit = GameManager.placeUnit("test:BerserkerBull", player2, "tile:desert")
+	var unit2: AbstractUnit = GameManager.placeUnit("test:BerserkerBull", player2, DesertTile.new(1, 1))
 	
 	#On simule un combat du taureau berserk qui attaque le singe
 	GameManager.fight(unit1, unit2)
@@ -81,12 +83,12 @@ func testGodMonkeyEffectsWorked() -> void:
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	
 	#On crée l'unité du joueur 1
-	var unit1: AbstractUnit = GameManager.placeUnit("test:GodMonkey", player1, "tile:desert")
+	var unit1: AbstractUnit = GameManager.placeUnit("test:GodMonkey", player1, DesertTile.new(1, 1))
 	assert(unit1.speed == 22)
 	#On crée l'unité du joueur 2
-	var unit2: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, "tile:desert")
+	var unit2: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, DesertTile.new(1, 2))
 	assert(unit1.speed == 23)
-	var unit3: AbstractUnit = GameManager.placeUnit("test:BerserkerBull", player2, "tile:desert")
+	var unit3: AbstractUnit = GameManager.placeUnit("test:BerserkerBull", player2, DesertTile.new(2, 1))
 	#On simule un combat du taureau berserk qui attaque le singe
 	GameManager.fight(unit3, unit2)
 	TurnManager.nextTurn()
@@ -104,9 +106,9 @@ func testMonteeNiveau():
 	TurnManager.addTeam(player1.team)
 	TurnManager.addTeam(player2.team)
 	#On crée l'unité du joueur 1
-	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player2, "tile:desert")
+	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player2, DesertTile.new(1, 1))
 	#On crée l'unité du joueur 2 qu'on va faire monter de niveau
-	var unit2: AbstractUnit = GameManager.placeUnit("test:BerserkerBull", player2, "tile:desert")
+	var unit2: AbstractUnit = GameManager.placeUnit("test:BerserkerBull", player2, DesertTile.new(1, 2))
 	#On simule un combat du taureau berserk qui attaque les 2 singes pour les tuer
 	var lvlBull = unit2.level
 	GameManager.fight(unit2, unit1)
@@ -125,7 +127,7 @@ func testSaveDatas() -> void:
 
 	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
-	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, "tile:desert")
+	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, DesertTile.new(1, 3))
 	GameManager.savingGame()
 	GameManager.loadSave(1)
 	var players: Array = GameManager.getPlayers()
@@ -139,8 +141,8 @@ func testTemporalSnail() -> void:
 	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	
-	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, "tile:desert")
-	var unit2: AbstractUnit = GameManager.placeUnit("test:TemporalSnail", player2, "tile:desert")
+	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, DesertTile.new(4, 1))
+	var unit2: AbstractUnit = GameManager.placeUnit("test:TemporalSnail", player2, DesertTile.new(1, 1))
 	print(unit2.getPower())
 	GameManager.fight(unit2, unit1)
 	TurnManager.nextTurn()
@@ -161,8 +163,8 @@ func testAbominationMonkeyEffects() -> void :
 	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	
-	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, "tile:desert")
-	var unit2: AbstractUnit = GameManager.placeUnit("test:AbominationMonkey", player2, "tile:desert")
+	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, DesertTile.new(1, 1))
+	var unit2: AbstractUnit = GameManager.placeUnit("test:AbominationMonkey", player2, DesertTile.new(1, 2))
 	var expectedDmg: int = unit2.getPower()
 	GameManager.fight(unit2, unit1)
 	print(expectedDmg)

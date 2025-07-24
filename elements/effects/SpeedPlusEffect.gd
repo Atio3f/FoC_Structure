@@ -18,4 +18,3 @@ func onEffectEnd() -> void:
 	unitAssociated.speed -= value_A
 	unitAssociated.effects.erase(self)
 	self.free()
-

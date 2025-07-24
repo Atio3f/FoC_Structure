@@ -1,3 +1,15 @@
-[gd_scene format=3 uid="uid://bbeyym2txetl5"]
+[gd_scene load_steps=2 format=3 uid="uid://bbeyym2txetl5"]
+
+[ext_resource type="Script" uid="uid://cchu78ucpgyp1" path="res://gameLogic/classes/MapManager.gd" id="1_0e48y"]
 
 [node name="Node2D" type="Node2D"]
+
+[node name="Map" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("1_0e48y")
+
+[node name="Core" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(5000, 5000)
+zoom = Vector2(0.1, 0.1)

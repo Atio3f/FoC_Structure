@@ -1,7 +1,7 @@
 extends AbstractItem
 class_name BrambleGauntlet
 
-const idUnit = "test:BrambleGauntlet"
+const idItem = "test:BrambleGauntlet"
 const img = ""
 const ORB_COST = 0
 const DAMAGE_BONUS = 2
@@ -19,3 +19,6 @@ static func canBeUsedOnUnit(playerUsing: AbstractPlayer, unit: AbstractUnit, orb
 
 static func canBeUsedOnPlayer(playerUsing: AbstractPlayer, playerTargeted: AbstractPlayer, orbCost: int = ORB_COST) -> bool:
 	return false	#Can't be used on a player
+
+static func getId() -> String:
+	return idItem

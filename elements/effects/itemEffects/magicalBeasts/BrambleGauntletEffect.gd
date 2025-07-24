@@ -12,4 +12,3 @@ func onDamageDealed(unit: AbstractUnit, damage: int, damageType: DamageTypes.Dam
 	if(true && !visualisation):	#true will be replaced by the check if it's a contact attack or not
 		unit.addEffect(SpeedPlusEffect.new(unit, value_C, value_B))
 	return damage + value_A
-
