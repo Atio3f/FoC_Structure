@@ -14,8 +14,7 @@ static var instanceTerrain = sceneTerrain.instantiate()
 static var terrain : Terrain = instanceTerrain as Terrain	#We get the script
 
 func _ready():
-	print("tzet")
-	print(terrain)
+	print("CREATION TERRAIN")
 	createTerrain()
 
 func createTerrain() -> void :

@@ -187,5 +187,8 @@ func testItemVitalLinkWork() -> void:
 	assert(player1.getCards().size() == 1)
 	assert(player1.cardPlayable("test:VitalLink") == []) #Check que la carte est injouable pour l'instant
 	GameManager.fight(unit2, unit1)
+	var hpKnight : int = unit1.hpActual
 	assert(player1.cardPlayable("test:VitalLink") != [])
 	player1.useCard("test:VitalLink", [unit1])
+	assert(player1.getCards().size() == 0)	#L'objet a bien été consommé
+	assert(unit1.hpActual == hpKnight + 10)	#L'objet a bien affecté l'unité
