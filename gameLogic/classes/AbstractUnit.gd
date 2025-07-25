@@ -295,6 +295,10 @@ func calculateLevel() -> void :
 	else:
 		return
 
+#We can't override get_class method from Node sadly
+func getClass() -> String :
+	return "AbstractUnit"
+
 func registerUnit() -> Dictionary :
 	var unitData := {
 		"id": self.id,

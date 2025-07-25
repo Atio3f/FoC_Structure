@@ -17,7 +17,7 @@ func _init(team: TeamsColor.TeamsColor, name: String):
 	GameManager.players.append(self)
 	orbs = ORBS_BASE
 	maxOrbs = MAX_ORBS_BASE
-
+	hand = PlayerHand.new(self)
 
 func getUnits() -> Array[AbstractUnit]:
 	return units
@@ -52,9 +52,28 @@ func targetsAvailable(idCard: String) -> Array :
 			targets.append(player)
 	return targets
 
+func cardPlayable(idCard: String) -> Array :
+	if !hand.getHand().has(idCard) :
+		return []
+	return targetsAvailable(idCard)
+
 #Sera appelé quand on clique sur une carte jouable
-func useCard(idCard: String) -> void :
+func useCard(idCard: String, targets: Array) -> void :
+	for target in targets :
+		#Permet d'envoyer des informations différentes en fonction de si la cible est une unité ou un joueur
+		if target.getClass() == "AbstractUnit" : 
+			ItemDb.ITEMS[idCard].new(target.player, target)
+		elif target.getClass() == "AbstractPlayer": 
+			ItemDb.ITEMS[idCard].new(target, null)
 	hand.useCard(idCard)
+
+#Pour ajouter une carte à la main du joueur
+func addCard(idCard: String) -> void:
+	hand.addCard(idCard)
+
+#We can't override get_class method from Node sadly
+func getClass() -> String :
+	return "AbstractPlayer"
 
 func registerPlayer() -> Dictionary :
 	var playerData := {

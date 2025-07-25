@@ -4,13 +4,15 @@ extends Node
 func _ready():
 	
 	GameManager.generateMap(20, 20)
-	testFightMonkey1()
+	#testFightMonkey1()
 	#testHealOnKill()
 	#testGodMonkeyEffectsWorked()
 	#testMonteeNiveau()
 	#testSaveDatas()
 	#testTemporalSnail()
 	#testAbominationMonkeyEffects()
+	testItemVitalLinkWork()
+
 #Test qui permet de savoir si on peut bien créer 2 joueurs avec 2 unités chacun en vérifiant l'activation de leurs effets de placement
 #et faire des combats jusqu'à la mort en vérifiant que certains effets s'activent à la mort
 func testFightMonkey1():
@@ -163,11 +165,27 @@ func testAbominationMonkeyEffects() -> void :
 	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	
-	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, DesertTile.new(1, 1))
+	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, ForestTile.new(1, 1))
 	var unit2: AbstractUnit = GameManager.placeUnit("test:AbominationMonkey", player2, DesertTile.new(1, 2))
 	var expectedDmg: int = unit2.getPower()
 	GameManager.fight(unit2, unit1)
 	print(expectedDmg)
 	assert(unit1.hpActual == (unit1.hpMax - expectedDmg))
+	TurnManager.nextTurn()
+	TurnManager.nextTurn()
+	assert(unit1.hpActual == (unit1.hpMax - expectedDmg + 13))
+
+
+func testItemVitalLinkWork() -> void:
+	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
+	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	
-	assert(unit1.hpActual == (unit1.hpMax - expectedDmg + 10))
+	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, ForestTile.new(1, 1))
+	var unit2: AbstractUnit = GameManager.placeUnit("test:AbominationMonkey", player2, DesertTile.new(1, 2))
+	
+	player1.addCard("test:VitalLink")
+	assert(player1.getCards().size() == 1)
+	assert(player1.cardPlayable("test:VitalLink") == []) #Check que la carte est injouable pour l'instant
+	GameManager.fight(unit2, unit1)
+	assert(player1.cardPlayable("test:VitalLink") != [])
+	player1.useCard("test:VitalLink", [unit1])
