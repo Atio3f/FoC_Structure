@@ -11,7 +11,8 @@ func _ready():
 	#testSaveDatas()
 	#testTemporalSnail()
 	#testAbominationMonkeyEffects()
-	testItemVitalLinkWork()
+	#testItemVitalLinkWork()
+	testItemBrambleGauntletWork()
 
 #Test qui permet de savoir si on peut bien créer 2 joueurs avec 2 unités chacun en vérifiant l'activation de leurs effets de placement
 #et faire des combats jusqu'à la mort en vérifiant que certains effets s'activent à la mort
@@ -21,16 +22,16 @@ func testFightMonkey1():
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	print(player1.getUnits())
 	#On crée l'unité du joueur 1
-	var unit1: AbstractUnit = GameManager.placeUnit("test:Monkey", player1, DesertTile.new(1, 1))
-	var unit3: AbstractUnit = GameManager.placeUnit("test:Monkey", player1, DesertTile.new(1, 2))
+	var unit1: AbstractUnit = GameManager.placeUnitForTest("test:Monkey", player1, DesertTile.new(1, 1))
+	var unit3: AbstractUnit = GameManager.placeUnitForTest("test:Monkey", player1, DesertTile.new(1, 2))
 	
 	print("unité 1 " + str(unit1.uid))
 	print("unité 3 " + str(unit3.uid))
 	
 	#On crée l'unité du joueur 2
-	var unit2: AbstractUnit = GameManager.placeUnit("test:Monkey", player2, DesertTile.new(1, 3))
+	var unit2: AbstractUnit = GameManager.placeUnitForTest("test:Monkey", player2, DesertTile.new(1, 3))
 	print("unité 2 " + str(unit2.uid))
-	var unit4: AbstractUnit = GameManager.placeUnit("test:Monkey", player2, DesertTile.new(2, 1))
+	var unit4: AbstractUnit = GameManager.placeUnitForTest("test:Monkey", player2, DesertTile.new(2, 1))
 	print("unité 4 " + str(unit4.uid))
 	print("DEBUT FIGHT")
 	#On simule des combats jusqu'à la mort
@@ -60,9 +61,9 @@ func testHealOnKill():
 	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	#On crée l'unité du joueur 1
-	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, DesertTile.new(1, 2))
+	var unit1: AbstractUnit = GameManager.placeUnitForTest("test:KnightMonkey", player1, DesertTile.new(1, 2))
 	#On crée l'unité du joueur 2
-	var unit2: AbstractUnit = GameManager.placeUnit("test:BerserkerBull", player2, DesertTile.new(1, 1))
+	var unit2: AbstractUnit = GameManager.placeUnitForTest("test:BerserkerBull", player2, DesertTile.new(1, 1))
 	
 	#On simule un combat du taureau berserk qui attaque le singe
 	GameManager.fight(unit1, unit2)
@@ -85,12 +86,12 @@ func testGodMonkeyEffectsWorked() -> void:
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	
 	#On crée l'unité du joueur 1
-	var unit1: AbstractUnit = GameManager.placeUnit("test:GodMonkey", player1, DesertTile.new(1, 1))
+	var unit1: AbstractUnit = GameManager.placeUnitForTest("test:GodMonkey", player1, DesertTile.new(1, 1))
 	assert(unit1.speed == 22)
 	#On crée l'unité du joueur 2
-	var unit2: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, DesertTile.new(1, 2))
+	var unit2: AbstractUnit = GameManager.placeUnitForTest("test:KnightMonkey", player1, DesertTile.new(1, 2))
 	assert(unit1.speed == 23)
-	var unit3: AbstractUnit = GameManager.placeUnit("test:BerserkerBull", player2, DesertTile.new(2, 1))
+	var unit3: AbstractUnit = GameManager.placeUnitForTest("test:BerserkerBull", player2, DesertTile.new(2, 1))
 	#On simule un combat du taureau berserk qui attaque le singe
 	GameManager.fight(unit3, unit2)
 	TurnManager.nextTurn()
@@ -108,9 +109,9 @@ func testMonteeNiveau():
 	TurnManager.addTeam(player1.team)
 	TurnManager.addTeam(player2.team)
 	#On crée l'unité du joueur 1
-	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player2, DesertTile.new(1, 1))
+	var unit1: AbstractUnit = GameManager.placeUnitForTest("test:KnightMonkey", player2, DesertTile.new(1, 1))
 	#On crée l'unité du joueur 2 qu'on va faire monter de niveau
-	var unit2: AbstractUnit = GameManager.placeUnit("test:BerserkerBull", player2, DesertTile.new(1, 2))
+	var unit2: AbstractUnit = GameManager.placeUnitForTest("test:BerserkerBull", player2, DesertTile.new(1, 2))
 	#On simule un combat du taureau berserk qui attaque les 2 singes pour les tuer
 	var lvlBull = unit2.level
 	GameManager.fight(unit2, unit1)
@@ -129,7 +130,7 @@ func testSaveDatas() -> void:
 
 	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
-	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, DesertTile.new(1, 3))
+	var unit1: AbstractUnit = GameManager.placeUnitForTest("test:KnightMonkey", player1, DesertTile.new(1, 3))
 	GameManager.savingGame()
 	GameManager.loadSave(1)
 	var players: Array = GameManager.getPlayers()
@@ -143,8 +144,8 @@ func testTemporalSnail() -> void:
 	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	
-	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, DesertTile.new(4, 1))
-	var unit2: AbstractUnit = GameManager.placeUnit("test:TemporalSnail", player2, DesertTile.new(1, 1))
+	var unit1: AbstractUnit = GameManager.placeUnitForTest("test:KnightMonkey", player1, DesertTile.new(4, 1))
+	var unit2: AbstractUnit = GameManager.placeUnitForTest("test:TemporalSnail", player2, DesertTile.new(1, 1))
 	print(unit2.getPower())
 	GameManager.fight(unit2, unit1)
 	TurnManager.nextTurn()
@@ -165,8 +166,8 @@ func testAbominationMonkeyEffects() -> void :
 	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	
-	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, ForestTile.new(1, 1))
-	var unit2: AbstractUnit = GameManager.placeUnit("test:AbominationMonkey", player2, DesertTile.new(1, 2))
+	var unit1: AbstractUnit = GameManager.placeUnitForTest("test:KnightMonkey", player1, ForestTile.new(1, 1))
+	var unit2: AbstractUnit = GameManager.placeUnitForTest("test:AbominationMonkey", player2, DesertTile.new(1, 2))
 	var expectedDmg: int = unit2.getPower()
 	GameManager.fight(unit2, unit1)
 	print(expectedDmg)
@@ -180,8 +181,8 @@ func testItemVitalLinkWork() -> void:
 	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
 	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
 	
-	var unit1: AbstractUnit = GameManager.placeUnit("test:KnightMonkey", player1, ForestTile.new(1, 1))
-	var unit2: AbstractUnit = GameManager.placeUnit("test:AbominationMonkey", player2, DesertTile.new(1, 2))
+	var unit1: AbstractUnit = GameManager.placeUnitForTest("test:KnightMonkey", player1, ForestTile.new(1, 1))
+	var unit2: AbstractUnit = GameManager.placeUnitForTest("test:AbominationMonkey", player2, DesertTile.new(1, 2))
 	
 	player1.addCard("test:VitalLink")
 	assert(player1.getCards().size() == 1)
@@ -192,3 +193,24 @@ func testItemVitalLinkWork() -> void:
 	player1.useCard("test:VitalLink", [unit1])
 	assert(player1.getCards().size() == 0)	#L'objet a bien été consommé
 	assert(unit1.hpActual == hpKnight + 10)	#L'objet a bien affecté l'unité
+
+func testItemBrambleGauntletWork() -> void:
+	var player1: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.CYAN, "player1")
+	var player2: AbstractPlayer = GameManager.createPlayer(TeamsColor.TeamsColor.RED, "player2")
+	
+	var unit1: AbstractUnit = GameManager.placeUnitForTest("test:KnightMonkey", player1, ForestTile.new(1, 1))
+	var unit2: AbstractUnit = GameManager.placeUnitForTest("test:AbominationMonkey", player2, DesertTile.new(1, 2))
+	
+	player1.addCard("test:BrambleGauntlet")
+	assert(player1.getCards().size() == 1)
+	assert(player1.cardPlayable("test:BrambleGauntlet") == []) #Check que la carte est injouable pour l'instant
+	var hpAbomination : int = unit2.hpActual
+	var speedAbomination : int = unit2.speed
+	var unit3: AbstractUnit = GameManager.placeUnitForTest("test:BlueMushroom", player1, ForestTile.new(1, 1))
+	assert(player1.cardPlayable("test:BrambleGauntlet") != [])
+	player1.useCard("test:BrambleGauntlet", [unit3])
+	assert(player1.getCards().size() == 0)
+	GameManager.fight(unit3, unit2)
+	#Assert damage augments et vitesse réduite
+	assert(unit2.hpActual == hpAbomination - 4)
+	assert(unit2.speed == speedAbomination - 3)

@@ -37,7 +37,14 @@ static func createPlayer(team: TeamsColor.TeamsColor, name: String) -> AbstractP
 	if !TurnManager.teams.has(team) : TurnManager.addTeam(team)
 	return player
 
-static func placeUnit(id: String, player: AbstractPlayer, tile: AbstractTile) -> AbstractUnit:#pê pas besoin de renvoyer l'unité produite
+
+static func placeUnit(id: String, player: AbstractPlayer, tileCoord: Vector2i) -> AbstractUnit:
+	var unit: AbstractUnit = UnitDb.UNITS[id].new(player)#We only keep the second id part to get the class corresponding
+	unit.onPlacement(MapManager.getTileAt(tileCoord))
+	return unit
+
+#Pour les tests on a besoin d'être sûr du type de case
+static func placeUnitForTest(id: String, player: AbstractPlayer, tile: AbstractTile) -> AbstractUnit:#pê pas besoin de renvoyer l'unité produite
 	var unit: AbstractUnit = UnitDb.UNITS[id].new(player)#We only keep the second id part to get the class corresponding
 	unit.onPlacement(tile)
 	return unit

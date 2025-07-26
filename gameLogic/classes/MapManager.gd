@@ -2,11 +2,12 @@ extends Node
 class_name MapManager
 
 
-static var tiles: Array = []
+static var tiles: Array = []	#All tiles stocked
+static var activeTiles: Dictionary = {}	#Tiles actually on the visible map
 static var length: int
 static var width: int
 #clé nom case, valeur =  poids de la case
-const genMapDefault = {"test:ForestTile": 100, "test:PlainTile": 83, "test:SwampTile": 11, "test:LakeTile": 25, "test:DesertTile": 9, "test:MountainTile": 19, "test:SakuraForestTile": 3}
+const genMapDefault = {"test:ForestTile": 100, "test:PlainTile": 83, "test:SwampTile": 11, "test:LakeTile": 25, "test:DesertTile": 5, "test:MountainTile": 19, "test:SakuraForestTile": 7, "test:DeepWaterTile": 2, "test:TropicalForestTile": 2}
 #J'ai pas encore fait les autres cases
 const genMapTEST = {"test:ForestTile": 100, "test:LakeTile": 25}
 static var sceneTerrain: PackedScene = preload("res://nodes/tilemaps/terrain512x512.tscn")
@@ -30,12 +31,17 @@ static func initMap(_length: int, _width: int) -> void :
 		genMaxValue += weight
 	var i : int = 0
 	var j : int = 0
+	var tile: AbstractTile
 	while i < _length :
 		while j < _width :
-			tiles.append(pickTile(genMaxValue, i, j, genMapDefault))
+			tile = pickTile(genMaxValue, i, j, genMapDefault)
+			activeTiles[Vector2i(i, j)] = tile
+			tiles.append(tile)
+			
 			j += 1
 		i += 1
 		j = 0
+	
 
 static func pickTile(totalWeight: int, i: int, j: int, genMap: Dictionary) -> AbstractTile:
 	var random = randi() % totalWeight
@@ -51,3 +57,6 @@ static func pickTile(totalWeight: int, i: int, j: int, genMap: Dictionary) -> Ab
 			terrain.setTile(i, j, vectorTile)
 			break
 	return tile
+
+static func getTileAt(coords: Vector2i) -> AbstractTile :
+	return activeTiles.get(coords)

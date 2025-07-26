@@ -7,5 +7,5 @@ const POTENTIAL = 3
 const img = ""
 
 func _init(playerAssociated: AbstractPlayer):
-	super._init(idUnit, img, playerAssociated, GRADE, 28, 4, DamageTypes.DamageTypes.MAGICAL, 3, 1, 10, 0, 5, POTENTIAL, 3)
+	super._init(idUnit, img, playerAssociated, GRADE, 28, 5, DamageTypes.DamageTypes.MAGICAL, 3, 1, 10, 0, 5, POTENTIAL, 3)
 	tags.append(Tags.tags.MAGICAL_BEAST)

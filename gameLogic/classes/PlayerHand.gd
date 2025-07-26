@@ -5,6 +5,7 @@ class_name PlayerHand
 var cards: Array[String] = []#Contains all id cards
 var player: AbstractPlayer
 var cardsPlayed: Array[String] = []
+var maxSize: int = 10	#Nombre de cartes dans la main possible, inutilisé pour le moment
 
 func _init(playerAssociated: AbstractPlayer):
 	self.player = playerAssociated

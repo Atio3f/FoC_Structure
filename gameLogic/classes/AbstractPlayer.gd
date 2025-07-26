@@ -33,11 +33,12 @@ func getCards() -> Array[String] :
 	return hand.getHand()
 
 #Renvoie les cartes jouables du joueur depuis son inventaire(pour le moment on compte pas 
+#pê inutile et juste faire getCards et boucler cardCanBePlayedInventory pour toutes les cartes
 func getUsableCardsInventory() -> Array[String] :
 	return hand.getHand()
 
 func cardCanBePlayedInventory(idCard: String) -> bool :
-	return true
+	return targetsAvailable(idCard) != []
 
 #Peut contenir des unités ou des joueurs, pour ça que je précise pas dans le renvoi
 func targetsAvailable(idCard: String) -> Array :

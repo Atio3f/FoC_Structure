@@ -5,8 +5,8 @@ const idItem = "test:BrambleGauntlet"
 const img = ""
 const ORB_COST = 0
 const DAMAGE_BONUS = 2
-const SPEED_MALUS = -4
-const SPEED_MALUS_DURATION = 3
+const SPEED_MALUS = -3
+const SPEED_MALUS_DURATION = 2
 
 func _init(playerAssociated: AbstractPlayer, unitAssociated: AbstractUnit) -> void:
 	var effect: AbstractEffect = BrambleGauntletEffect.new(unitAssociated, -1, DAMAGE_BONUS, SPEED_MALUS, SPEED_MALUS_DURATION)
